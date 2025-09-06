@@ -1,35 +1,75 @@
+/* A global reset for box-sizing is good practice */
 * {
   box-sizing: border-box;
 }
 
+/* Ensure the HTML and body take up full viewport height for centering */
+html, body {
+  height: 100%; 
+  margin: 0;
+  padding: 0;
+}
+
 body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    min-height: 100vh;
+    padding: 2rem;
+    flex-direction: column;
 }
-   
+
+/* New wrapper to hold the title, container, and button */
+.container-wrapper {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    width: 90%;
+    /* This is the key change for a square that scales with the screen */
+    max-width: 90vh; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 #container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    min-width: 502px;
-    max-width: 1000px;
-    max-height: 1000px;
-    border: solid rebeccapurple;
-}
-
-#container>div {
-    /* Each div takes up 1/16th of the containers width */
-    flex: 1 0 6.25%;
-    aspect-ratio: 1;
-    border: 1px solid gray;
-}
-
-/* #container>div:nth-child(17n + 1) {
+    /* Use width: 100% to fill the container-wrapper */
     width: 100%;
-    border: 0;
-    height: 0;
-} */
+    /* This maintains the square shape */
+    aspect-ratio: 1; 
+    border: 2px solid #e5e7eb;
+}
+
+.cell {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    /* Ensures each cell is a perfect square */
+    aspect-ratio: 1; 
+}
+
+.button-container {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+#btn {
+    background-color: lightblue;
+    border-radius: 5px;
+    border: solid rgb(0, 84, 122);
+    padding: 12px 24px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+#btn:hover {
+    background-color: rgb(0, 84, 122);
+    transform: scale(1.05);
+}
