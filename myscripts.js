@@ -19,7 +19,8 @@ function createGrid(numDivsPerSide) {
         cell.style.flexBasis = `${cellWidth}%`;
         container.appendChild(cell);
     }
-    attachHoverListeners();
+    // Call the function to attach both mouse and touch listeners
+    attachDrawingListeners();
 }
 
 function getRandomColor() {
@@ -31,23 +32,60 @@ function getRandomColor() {
     return color;
 }
 
-function attachHoverListeners() {
-    const cells = document.querySelectorAll(".cell");
-    cells.forEach(cell => {
-        let hoverCount = 0;
-        let initialColor = null;
+function draw(cell) {
+    let hoverCount = parseInt(cell.dataset.hoverCount) || 0;
+    
+    if (hoverCount === 0) {
+        cell.style.backgroundColor = getRandomColor();
+    }
 
-        cell.addEventListener('mouseover', () => {
-            if (hoverCount === 0) {
-                initialColor = getRandomColor();
-                cell.style.backgroundColor = initialColor;
-            }
-            if (hoverCount < 10) {
-                hoverCount++;
-                const darkeningFactor = 100 - (hoverCount * 10);
-                cell.style.filter = `brightness(${darkeningFactor}%)`;
-            }
+    if (hoverCount < 10) {
+        hoverCount++;
+        cell.dataset.hoverCount = hoverCount;
+        const darkeningFactor = 100 - (hoverCount * 10);
+        cell.style.filter = `brightness(${darkeningFactor}%)`;
+    }
+}
+
+function attachDrawingListeners() {
+    let isDrawing = false;
+    const cells = document.querySelectorAll(".cell");
+
+    // Add a single listener to the container
+    container.addEventListener('mousedown', () => { isDrawing = true; });
+    container.addEventListener('mouseup', () => { isDrawing = false; });
+    container.addEventListener('mousemove', (e) => {
+        if (!isDrawing) return;
+        if (e.target.classList.contains('cell')) {
+            draw(e.target);
+        }
+    });
+
+    // Add touch event listeners to the container
+    container.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Prevent scrolling and other default behaviors
+        isDrawing = true;
+        if (e.target.classList.contains('cell')) {
+            draw(e.target);
+        }
+    });
+
+    container.addEventListener('touchend', () => {
+        isDrawing = false;
+        // Reset hover counts on all cells after drawing ends
+        cells.forEach(cell => {
+            delete cell.dataset.hoverCount;
         });
+    });
+
+    container.addEventListener('touchmove', (e) => {
+        e.preventDefault(); // Prevent scrolling and other default behaviors
+        if (!isDrawing) return;
+        const touch = e.touches[0];
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (targetElement && targetElement.classList.contains('cell')) {
+            draw(targetElement);
+        }
     });
 }
 
@@ -56,8 +94,9 @@ function resetGrid() {
     cells.forEach(cell => {
         cell.style.backgroundColor = '#ffffff';
         cell.style.filter = 'brightness(100%)';
+        delete cell.dataset.hoverCount;
     });
-    attachHoverListeners();
+    attachDrawingListeners();
 }
 
 //Button & User Prompt
@@ -84,13 +123,3 @@ createGrid(16);
 btn.addEventListener('click', promptUser);
 resetBtn.addEventListener('click', resetGrid);
 
-
-
-// // Add Event Listeners for all new created cells
-//     const cells = document.querySelectorAll(".cell");
-    
-//     cells.forEach(cell => {
-//     cell.addEventListener('mouseover', () => {
-//         cell.style.backgroundColor = 'black';
-//         });
-//     });
